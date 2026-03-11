@@ -2,9 +2,12 @@ import { useState } from 'react';
 import TopHeader from './components/TopHeader';
 import WebRailNav from './components/WebRailNav';
 import BalanceSheet from './pages/BalanceSheet';
+import FinancialPortraitShell from './pages/FinancialPortraitShell';
 
 export default function App() {
   const [activeSubTab, setActiveSubTab] = useState('Balance sheet');
+
+  const isPortrait = activeSubTab === 'Financial Portrait';
 
   return (
     <div style={{
@@ -20,10 +23,17 @@ export default function App() {
       {/* Main layout: sidebar + content */}
       <div style={{ display: 'flex', flex: 1 }}>
         <WebRailNav />
-        <BalanceSheet
-          activeSubTab={activeSubTab}
-          onSubTabChange={setActiveSubTab}
-        />
+        {isPortrait ? (
+          <FinancialPortraitShell
+            activeSubTab={activeSubTab}
+            onSubTabChange={setActiveSubTab}
+          />
+        ) : (
+          <BalanceSheet
+            activeSubTab={activeSubTab}
+            onSubTabChange={setActiveSubTab}
+          />
+        )}
       </div>
     </div>
   );
