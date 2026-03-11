@@ -6,7 +6,7 @@ import {
   faArrowRight, faChevronDown, faChevronUp,
   faExclamationTriangle, faCheckCircle, faShieldHalved,
 } from '@fortawesome/free-solid-svg-icons';
-import { FINANCIAL_PORTRAIT } from '../data/financialPortraitData';
+import { buildFinancialPortrait } from '../data/financialPortraitData';
 
 function formatDollar(value) {
   const abs = Math.abs(Math.round(value));
@@ -651,9 +651,9 @@ function StressTestResults({ scenarioId, results, darkMode }) {
 
 // ── Main Financial Portrait Page ────────────────────────────────────
 
-export default function FinancialPortrait({ darkMode = false }) {
+export default function FinancialPortrait({ darkMode = false, monthlyExpenses, annualIncome }) {
   const t = darkMode ? DARK : LIGHT;
-  const data = FINANCIAL_PORTRAIT;
+  const data = buildFinancialPortrait(monthlyExpenses, annualIncome);
   const [selectedScenario, setSelectedScenario] = useState(null);
   const [stressResults, setStressResults] = useState(null);
   const resultsRef = useRef(null);
@@ -689,7 +689,7 @@ export default function FinancialPortrait({ darkMode = false }) {
         color: t.fgNeutralMain,
         margin: 0,
       }}>
-        Financial Portrait
+        Financial portrait
       </h1>
 
       {/* Net worth hero */}

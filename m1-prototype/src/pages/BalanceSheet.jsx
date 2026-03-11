@@ -8,7 +8,7 @@ import BalanceSheetSection from '../components/BalanceSheetSection';
 import WebFooter from '../components/WebFooter';
 import { BALANCE_SHEET } from '../data/balanceSheetData';
 
-const SUB_TABS = ['Balance sheet', 'Cash flow', 'Financial Portrait', 'Investment profile', 'Investor disclosures'];
+const SUB_TABS = ['Balance sheet', 'Cash flow', 'Financial portrait', 'Investment profile', 'Investor disclosures', 'Risk profile'];
 
 function ActionButton({ label, darkMode }) {
   const t = darkMode ? DARK : LIGHT;
@@ -25,7 +25,7 @@ function ActionButton({ label, darkMode }) {
       background: 'none',
       border: `1px solid ${t.fgPrimary}`,
       borderRadius: 22,
-      padding: '11px 15px 11px 22px',
+      padding: '7px 12px 7px 14px',
       cursor: 'pointer',
     }}>
       {label}
@@ -46,15 +46,24 @@ export default function BalanceSheet({ darkMode = false, activeSubTab, onSubTabC
       flexDirection: 'column',
       minHeight: '100vh',
     }}>
-      {/* Primary tabs */}
-      <div style={{ padding: `0 ${SPACING.l}px` }}>
+      {/* Fixed primary tabs */}
+      <div style={{
+        position: 'fixed',
+        top: 56,
+        left: 264,
+        right: 0,
+        zIndex: 10,
+        backgroundColor: t.bgNeutralPrimary,
+        padding: `0 64px`,
+      }}>
         <PrimaryTabs activeTab="Your finances" darkMode={darkMode} />
       </div>
+      <div style={{ height: 57 }} />
 
       {/* Content area */}
       <div style={{
         flex: 1,
-        padding: `${SPACING.m}px ${SPACING.l}px`,
+        padding: `${SPACING.m}px 64px`,
         display: 'flex',
         flexDirection: 'column',
         gap: SPACING.m,
@@ -83,7 +92,7 @@ export default function BalanceSheet({ darkMode = false, activeSubTab, onSubTabC
         {/* Two-column layout */}
         <div style={{
           display: 'flex',
-          gap: SPACING['5xl'],
+          gap: 48,
         }}>
           {/* LEFT COLUMN — Assets */}
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: SPACING['3xl'] }}>

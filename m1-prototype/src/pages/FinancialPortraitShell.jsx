@@ -4,9 +4,9 @@ import SecondaryPills from '../components/SecondaryPills';
 import WebFooter from '../components/WebFooter';
 import FinancialPortrait from './FinancialPortrait';
 
-const SUB_TABS = ['Balance sheet', 'Cash flow', 'Financial Portrait', 'Investment profile', 'Investor disclosures'];
+const SUB_TABS = ['Balance sheet', 'Cash flow', 'Financial portrait', 'Investment profile', 'Investor disclosures', 'Risk profile'];
 
-export default function FinancialPortraitShell({ darkMode = false, activeSubTab, onSubTabChange }) {
+export default function FinancialPortraitShell({ darkMode = false, activeSubTab, onSubTabChange, monthlyExpenses, annualIncome }) {
   const t = darkMode ? DARK : LIGHT;
 
   return (
@@ -17,15 +17,24 @@ export default function FinancialPortraitShell({ darkMode = false, activeSubTab,
       flexDirection: 'column',
       minHeight: '100vh',
     }}>
-      {/* Primary tabs */}
-      <div style={{ padding: `0 ${SPACING.l}px` }}>
+      {/* Fixed primary tabs */}
+      <div style={{
+        position: 'fixed',
+        top: 56,
+        left: 264,
+        right: 0,
+        zIndex: 10,
+        backgroundColor: t.bgNeutralPrimary,
+        padding: `0 64px`,
+      }}>
         <PrimaryTabs activeTab="Your finances" darkMode={darkMode} />
       </div>
+      <div style={{ height: 57 }} />
 
       {/* Content area */}
       <div style={{
         flex: 1,
-        padding: `${SPACING.m}px ${SPACING.l}px`,
+        padding: `${SPACING.m}px 64px`,
         display: 'flex',
         flexDirection: 'column',
         gap: SPACING.m,
@@ -39,22 +48,8 @@ export default function FinancialPortraitShell({ darkMode = false, activeSubTab,
         />
 
         {/* Financial Portrait content */}
-        <FinancialPortrait darkMode={darkMode} />
+        <FinancialPortrait darkMode={darkMode} monthlyExpenses={monthlyExpenses} annualIncome={annualIncome} />
 
-        {/* Disclosures link */}
-        <div style={{ padding: `${SPACING.xs}px 0` }}>
-          <span style={{
-            fontFamily: 'Inter, sans-serif',
-            fontSize: 16,
-            fontWeight: 400,
-            lineHeight: '24px',
-            letterSpacing: -0.25,
-            color: t.fgPrimary,
-            cursor: 'pointer',
-          }}>
-            <sup>1,2</sup>Disclosures
-          </span>
-        </div>
       </div>
 
       {/* Footer */}

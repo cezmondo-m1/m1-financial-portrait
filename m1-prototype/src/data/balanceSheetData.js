@@ -13,9 +13,9 @@ export const BALANCE_SHEET = {
   ],
 
   liabilityComposition: [
-    { label: 'Mortgage', value: 125000, color: 'chartDatapoint2' },
-    { label: 'Credit cards', value: 5050, color: 'chartDatapoint1' },
-    { label: 'Other debts and loans', value: 50150, color: 'chartDatapoint3' },
+    { label: 'Mortgage', value: 125000, color: '#D6A55C' },
+    { label: 'Credit cards', value: 5050, color: '#F4E0A2' },
+    { label: 'Other debts and loans', value: 50150, color: '#EDD17B' },
   ],
 
   assets: {
