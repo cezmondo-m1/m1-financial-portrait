@@ -11,32 +11,35 @@ import { BALANCE_SHEET } from '../data/balanceSheetData';
 const SUB_TABS = ['Balance sheet', 'Cash flow', 'Financial portrait', 'Investment profile', 'Investor disclosures', 'Risk profile'];
 
 function ActionButton({ label, darkMode }) {
-  const t = darkMode ? DARK : LIGHT;
   return (
     <button style={{
       display: 'inline-flex',
       alignItems: 'center',
-      gap: 6,
+      alignSelf: 'flex-start',
+      gap: 8,
       fontFamily: 'Inter, sans-serif',
-      fontSize: 13,
+      fontSize: 14,
       fontWeight: 600,
-      lineHeight: '19px',
-      color: t.fgPrimary,
+      lineHeight: '20px',
+      color: '#2A7DA7',
       background: 'none',
-      border: `1px solid ${t.fgPrimary}`,
-      borderRadius: 22,
-      padding: '7px 12px 7px 14px',
+      border: '2px solid #2A7DA7',
+      borderRadius: 24,
+      padding: '12px 24px',
       cursor: 'pointer',
     }}>
       {label}
-      <FontAwesomeIcon icon={faPlus} style={{ fontSize: 12 }} />
+      <FontAwesomeIcon icon={faPlus} style={{ fontSize: 14 }} />
     </button>
   );
 }
 
-export default function BalanceSheet({ darkMode = false, activeSubTab, onSubTabChange }) {
+export default function BalanceSheet({ darkMode = false, activeSubTab, onSubTabChange, layout = {} }) {
   const t = darkMode ? DARK : LIGHT;
   const data = BALANCE_SHEET;
+  const pad = layout.contentPadding ?? 64;
+  const navW = (layout.navWidth ?? 264) + (layout.panelWidth ?? 0);
+  const isSmall = layout.bp === 'xs' || layout.bp === 's';
 
   return (
     <div style={{
@@ -50,11 +53,12 @@ export default function BalanceSheet({ darkMode = false, activeSubTab, onSubTabC
       <div style={{
         position: 'fixed',
         top: 56,
-        left: 264,
+        left: navW,
         right: 0,
         zIndex: 10,
         backgroundColor: t.bgNeutralPrimary,
-        padding: `0 64px`,
+        padding: `0 ${pad}px`,
+        overflowX: 'auto',
       }}>
         <PrimaryTabs activeTab="Your finances" darkMode={darkMode} />
       </div>
@@ -63,18 +67,20 @@ export default function BalanceSheet({ darkMode = false, activeSubTab, onSubTabC
       {/* Content area */}
       <div style={{
         flex: 1,
-        padding: `${SPACING.m}px 64px`,
+        padding: `${SPACING.m}px ${pad}px`,
         display: 'flex',
         flexDirection: 'column',
         gap: SPACING.m,
       }}>
         {/* Sub-pills */}
-        <SecondaryPills
-          tabs={SUB_TABS}
-          activeTab={activeSubTab}
-          onTabChange={onSubTabChange}
-          darkMode={darkMode}
-        />
+        <div style={{ overflowX: 'auto' }}>
+          <SecondaryPills
+            tabs={SUB_TABS}
+            activeTab={activeSubTab}
+            onTabChange={onSubTabChange}
+            darkMode={darkMode}
+          />
+        </div>
 
         {/* Page title */}
         <h1 style={{
@@ -89,10 +95,11 @@ export default function BalanceSheet({ darkMode = false, activeSubTab, onSubTabC
           Balance sheet
         </h1>
 
-        {/* Two-column layout */}
+        {/* Two-column layout (stacks on small screens) */}
         <div style={{
           display: 'flex',
-          gap: 48,
+          flexDirection: isSmall ? 'column' : 'row',
+          gap: isSmall ? SPACING.l : 48,
         }}>
           {/* LEFT COLUMN — Assets */}
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: SPACING['3xl'] }}>

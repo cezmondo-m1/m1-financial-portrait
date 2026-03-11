@@ -92,8 +92,12 @@ export default function CashFlow({
   darkMode = false, activeSubTab, onSubTabChange,
   annualIncome = 175000, onAnnualIncomeChange,
   monthlyExpenses = 5000, onMonthlyExpensesChange,
+  layout = {},
 }) {
   const t = darkMode ? DARK : LIGHT;
+  const pad = layout.contentPadding ?? 64;
+  const navW = (layout.navWidth ?? 264) + (layout.panelWidth ?? 0);
+  const isSmall = layout.bp === 'xs' || layout.bp === 's';
   const [incomeDisplay, setIncomeDisplay] = useState(formatCurrency(annualIncome));
   const [expenseDisplay, setExpenseDisplay] = useState(formatCurrency(monthlyExpenses));
 
@@ -121,11 +125,12 @@ export default function CashFlow({
       <div style={{
         position: 'fixed',
         top: 56,
-        left: 264,
+        left: navW,
         right: 0,
         zIndex: 10,
         backgroundColor: t.bgNeutralPrimary,
-        padding: `0 64px`,
+        padding: `0 ${pad}px`,
+        overflowX: 'auto',
       }}>
         <PrimaryTabs activeTab="Your finances" darkMode={darkMode} />
       </div>
@@ -134,23 +139,26 @@ export default function CashFlow({
       {/* Content area */}
       <div style={{
         flex: 1,
-        padding: `${SPACING.m}px 64px`,
+        padding: `${SPACING.m}px ${pad}px`,
         display: 'flex',
         flexDirection: 'column',
         gap: SPACING.m,
       }}>
         {/* Sub-pills */}
-        <SecondaryPills
-          tabs={SUB_TABS}
-          activeTab={activeSubTab}
-          onTabChange={onSubTabChange}
-          darkMode={darkMode}
-        />
+        <div style={{ overflowX: 'auto' }}>
+          <SecondaryPills
+            tabs={SUB_TABS}
+            activeTab={activeSubTab}
+            onTabChange={onSubTabChange}
+            darkMode={darkMode}
+          />
+        </div>
 
         {/* Two-column layout: Income (left) + Expenses (right) */}
         <div style={{
           display: 'flex',
-          gap: SPACING['5xl'],
+          flexDirection: isSmall ? 'column' : 'row',
+          gap: isSmall ? SPACING.l : SPACING['5xl'],
         }}>
           {/* LEFT COLUMN — Income */}
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: SPACING.m }}>

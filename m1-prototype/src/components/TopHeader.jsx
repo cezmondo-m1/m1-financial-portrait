@@ -2,8 +2,9 @@ import { LIGHT, DARK, SPACING } from '../tokens';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faGift } from '@fortawesome/free-solid-svg-icons';
 
-export default function TopHeader({ darkMode = false }) {
+export default function TopHeader({ darkMode = false, layout = {}, onMenuToggle }) {
   const t = darkMode ? DARK : LIGHT;
+  const showHamburger = layout.navMode === 'hidden';
 
   return (
     <div style={{
@@ -23,7 +24,13 @@ export default function TopHeader({ darkMode = false }) {
       boxSizing: 'border-box',
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: SPACING.s }}>
-        <FontAwesomeIcon icon={faBars} style={{ fontSize: 16, color: t.fgNeutralMain }} />
+        {showHamburger && (
+          <FontAwesomeIcon
+            icon={faBars}
+            style={{ fontSize: 16, color: t.fgNeutralMain, cursor: 'pointer' }}
+            onClick={onMenuToggle}
+          />
+        )}
         <img src="/m1Logo32.svg" alt="M1" width={24} height={24} />
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: SPACING['2xs'] }}>

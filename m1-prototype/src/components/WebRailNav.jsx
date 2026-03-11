@@ -16,7 +16,7 @@ import {
 // Icon-to-text spacing: 16px
 // Selected: BG/Info Subtle bg, Blue/05 1px left border, elevated gradient icon
 
-function AppNavigationItem({ icon, label, selected, darkMode, onClick, caption }) {
+function AppNavigationItem({ icon, label, selected, darkMode, onClick, caption, collapsed }) {
   const t = darkMode ? DARK : LIGHT;
   const [hovered, setHovered] = useState(false);
 
@@ -41,11 +41,13 @@ function AppNavigationItem({ icon, label, selected, darkMode, onClick, caption }
       onClick={onClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      title={collapsed ? label : undefined}
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: SPACING.s,
-        padding: `${SPACING['2xs']}px ${SPACING.m}px`,
+        justifyContent: collapsed ? 'center' : 'flex-start',
+        gap: collapsed ? 0 : SPACING.s,
+        padding: collapsed ? `${SPACING['2xs']}px 0` : `${SPACING['2xs']}px ${SPACING.m}px`,
         height: 40,
         backgroundColor: bg,
         borderLeft,
@@ -58,24 +60,26 @@ function AppNavigationItem({ icon, label, selected, darkMode, onClick, caption }
         icon={icon}
         style={{ fontSize: 18, color: iconColor, width: 24, textAlign: 'center', flexShrink: 0 }}
       />
-      <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>
-        <span style={{
-          ...TYPE.pm600,
-          fontFamily: 'Inter, sans-serif',
-          color: textColor,
-        }}>
-          {label}
-        </span>
-        {caption && (
+      {!collapsed && (
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>
           <span style={{
-            ...TYPE.ps400,
+            ...TYPE.pm600,
             fontFamily: 'Inter, sans-serif',
-            color: captionColor,
+            color: textColor,
           }}>
-            {caption}
+            {label}
           </span>
-        )}
-      </div>
+          {caption && (
+            <span style={{
+              ...TYPE.ps400,
+              fontFamily: 'Inter, sans-serif',
+              color: captionColor,
+            }}>
+              {caption}
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -372,9 +376,11 @@ function NavSection({ product, isOpen, isSelected, onToggle, darkMode }) {
 // Section spacing: 24px
 // Footer padding: 8px top, 24px bottom, 4px item spacing
 
-export default function WebRailNav({ darkMode = false, selection = 'Settings' }) {
+export default function WebRailNav({ darkMode = false, selection = 'Settings', layout = {}, onIntelligenceClick }) {
   const t = darkMode ? DARK : LIGHT;
   const [openSection, setOpenSection] = useState(null);
+  const collapsed = layout.navMode === 'collapsed';
+  const navWidth = layout.navWidth || 264;
 
   function handleSectionToggle(product) {
     setOpenSection(openSection === product ? null : product);
@@ -388,7 +394,7 @@ export default function WebRailNav({ darkMode = false, selection = 'Settings' })
       top: 56,
       left: 0,
       bottom: 0,
-      width: 264,
+      width: navWidth,
       backgroundColor: t.bgNeutralPrimary,
       borderRight: `1px solid ${t.borderMain}`,
       display: 'flex',
@@ -397,17 +403,18 @@ export default function WebRailNav({ darkMode = false, selection = 'Settings' })
       boxSizing: 'border-box',
       overflowY: 'auto',
       zIndex: 15,
+      transition: 'width 200ms ease-out',
     }}>
       {/* Top section */}
       <div>
-        {/* M1 Intelligence button — Kind=Feature, Size=Medium, Default */}
-        <div style={{ padding: `${SPACING.m}px ${SPACING['2xs']}px` }}>
-          <div style={{
+        {/* M1 Intelligence button */}
+        <div style={{ padding: collapsed ? `${SPACING.m}px 8px` : `${SPACING.m}px ${SPACING['2xs']}px` }}>
+          <div onClick={onIntelligenceClick} style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: 8,
-            padding: '12px 24px',
+            gap: collapsed ? 0 : 8,
+            padding: collapsed ? '12px 0' : '12px 24px',
             borderRadius: 24,
             backgroundColor: '#FFFFFF',
             cursor: 'pointer',
@@ -416,47 +423,90 @@ export default function WebRailNav({ darkMode = false, selection = 'Settings' })
             position: 'relative',
             overflow: 'hidden',
           }}>
-            {/* Gradient border overlay — Gradient/Linear Feature Accent */}
+            {/* Static gradient border (always visible) */}
             <div style={{
               position: 'absolute',
               inset: 0,
               borderRadius: 24,
               padding: 1.5,
-              background: 'linear-gradient(155deg, #2FAED9 20%, rgba(47,174,217,0.1) 43%, rgba(125,201,188,0.1) 50%, #7DC9BC 67%, #2FAED9 100%)',
+              background: 'linear-gradient(155deg, #2FAED9 20%, #7DC9BC 50%, #2FAED9 100%)',
               WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
               WebkitMaskComposite: 'xor',
               maskComposite: 'exclude',
               pointerEvents: 'none',
             }} />
+            {/* Animated shimmer highlight traveling along the stroke */}
+            <style>{`
+              @keyframes shimmer-rotate {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+              }
+            `}</style>
+            <div style={{
+              position: 'absolute',
+              inset: -2,
+              borderRadius: 26,
+              overflow: 'hidden',
+              pointerEvents: 'none',
+            }}>
+              <div style={{
+                position: 'absolute',
+                inset: -50,
+                background: 'conic-gradient(from 0deg, transparent 0%, transparent 60%, rgba(255,255,255,0.8) 75%, transparent 90%, transparent 100%)',
+                animation: 'shimmer-rotate 3s linear infinite',
+              }} />
+            </div>
+            {/* Inner white fill */}
+            <div style={{
+              position: 'absolute',
+              inset: 1.5,
+              borderRadius: 22.5,
+              backgroundColor: '#FFFFFF',
+              pointerEvents: 'none',
+            }} />
             <img src="/m1Intelligence20.svg" alt="" width={20} height={20} style={{ zIndex: 1 }} />
-            <span style={{
-              ...TYPE.pm600,
-              fontFamily: 'Inter, sans-serif',
-              color: '#1C2026',
-              zIndex: 1,
-            }}>
-              M1 Intelligence
-            </span>
-            <span style={{
-              ...TYPE.ps400,
-              fontFamily: 'Inter, sans-serif',
-              color: t.fgNeutralTertiary,
-              zIndex: 1,
-            }}>
-              ⌘i
-            </span>
+            {!collapsed && (
+              <>
+                <span style={{
+                  ...TYPE.pm600,
+                  fontFamily: 'Inter, sans-serif',
+                  color: '#1C2026',
+                  zIndex: 1,
+                }}>
+                  M1 Intelligence
+                </span>
+                <span style={{
+                  ...TYPE.ps400,
+                  fontFamily: 'Inter, sans-serif',
+                  color: t.fgNeutralTertiary,
+                  zIndex: 1,
+                }}>
+                  ⌘i
+                </span>
+              </>
+            )}
           </div>
         </div>
 
-        {/* Main nav — spec: 4px item spacing, 24px section spacing */}
+        {/* Main nav */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: SPACING['3xs'] }}>
           <AppNavigationItem
             icon={faHome}
             label="Home"
             selected={selection === 'Home'}
             darkMode={darkMode}
+            collapsed={collapsed}
           />
-          {products.map((product) => (
+          {products.map((product) => collapsed ? (
+            <AppNavigationItem
+              key={product}
+              icon={NAV_SECTIONS[product].icon}
+              label={product}
+              selected={selection === product}
+              darkMode={darkMode}
+              collapsed
+            />
+          ) : (
             <NavSection
               key={product}
               product={product}
@@ -469,8 +519,7 @@ export default function WebRailNav({ darkMode = false, selection = 'Settings' })
         </div>
       </div>
 
-      {/* Footer — spec: 1px top border, 8px padding top, 24px padding bottom, 4px item spacing */}
-      {/* Items: Taylor Maede, Disclosures, Help, Log out */}
+      {/* Footer */}
       <div style={{
         borderTop: `1px solid ${t.borderMain}`,
         paddingTop: SPACING['2xs'],
@@ -479,27 +528,10 @@ export default function WebRailNav({ darkMode = false, selection = 'Settings' })
         flexDirection: 'column',
         gap: SPACING['3xs'],
       }}>
-        <AppNavigationItem
-          icon={faUser}
-          label="Taylor Maede"
-          selected={selection === 'Settings'}
-          darkMode={darkMode}
-        />
-        <AppNavigationItem
-          icon={faFileLines}
-          label="Disclosures"
-          darkMode={darkMode}
-        />
-        <AppNavigationItem
-          icon={faCircleQuestion}
-          label="Help"
-          darkMode={darkMode}
-        />
-        <AppNavigationItem
-          icon={faRightFromBracket}
-          label="Log out"
-          darkMode={darkMode}
-        />
+        <AppNavigationItem icon={faUser} label="Taylor Maede" selected={selection === 'Settings'} darkMode={darkMode} collapsed={collapsed} />
+        <AppNavigationItem icon={faFileLines} label="Disclosures" darkMode={darkMode} collapsed={collapsed} />
+        <AppNavigationItem icon={faCircleQuestion} label="Help" darkMode={darkMode} collapsed={collapsed} />
+        <AppNavigationItem icon={faRightFromBracket} label="Log out" darkMode={darkMode} collapsed={collapsed} />
       </div>
     </div>
   );
